@@ -1,6 +1,6 @@
-# craft-note-app ✍️
+# note-app ✍️
 
-Craft / OneNote 스타일의 웹 기반 노트 앱.  
+웹 기반 노트 앱.  
 **텍스트·표·이미지 등 모든 콘텐츠 위에 Apple Pencil로 직접 필기**할 수 있는 것이 핵심입니다.
 
 ![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
