@@ -1,6 +1,6 @@
 import {
   NoteIcon, CalendarIcon, NotebookIcon, FolderIcon, FileIcon,
-  PlusIcon, ChevronRightIcon, CaretRightIcon, SortIcon, XIcon,
+  PlusIcon, ChevronRightIcon, CaretRightIcon, SortIcon, XIcon, CaretLeftIcon,
 } from './Icons.jsx'
 
 export default function Sidebar({
@@ -12,12 +12,13 @@ export default function Sidebar({
   onSectionsSortChange, onPagesSortChange,
   onSelectNotebook, onSelectSection, onSelectPage,
   onAddNotebook, onAddSection, onAddPage,
+  panelsHidden, onTogglePanels,
 }) {
   const selectedNotebook = notebooks.find(n => n.id === selectedNotebookId)
   const selectedSection = selectedNotebook?.sections.find(s => s.id === selectedSectionId)
 
   return (
-    <div className="sidebar-container">
+    <div className={`sidebar-container ${panelsHidden ? 'panels-hidden' : ''}`}>
       {/* ── 노트북스 패널: 탭은 항상 여기 — 캘린더 탭에서도 보임 ── */}
       <div className="sidebar-notebooks">
         <div className="sidebar-header">
@@ -36,7 +37,17 @@ export default function Sidebar({
             </button>
           </div>
           {activeTab === 'notes' && (
-            <div className="sidebar-header-label">Notebooks</div>
+            <div className="sidebar-header-row">
+              <div className="sidebar-header-label">Notebooks</div>
+              <button
+                className="sidebar-panels-toggle"
+                onClick={onTogglePanels}
+                title={panelsHidden ? 'Sections / Pages 패널 펼치기' : 'Sections / Pages 패널 숨기기 (notebooks만)'}
+                aria-label={panelsHidden ? '패널 펼치기' : '패널 숨기기'}
+              >
+                {panelsHidden ? <CaretRightIcon size={11} /> : <CaretLeftIcon size={11} />}
+              </button>
+            </div>
           )}
         </div>
 

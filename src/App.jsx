@@ -193,6 +193,7 @@ export default function App() {
   const [selectedPageId, setSelectedPageId] = useState(initialUi.selectedPageId ?? 'p1')
   const [sectionsOpen, setSectionsOpen] = useState(initialUi.sectionsOpen ?? true)
   const [pagesOpen, setPagesOpen] = useState(initialUi.pagesOpen ?? true)
+  const [panelsHidden, setPanelsHidden] = useState(initialUi.panelsHidden ?? false)
   const [sectionsSort, setSectionsSort] = useState(initialUi.sectionsSort ?? 'default')
   const [pagesSort, setPagesSort] = useState(initialUi.pagesSort ?? 'default')
   const [isDrawMode, setIsDrawMode] = useState(false)
@@ -473,12 +474,14 @@ export default function App() {
           selectedPageId={selectedPageId}
           sectionsOpen={sectionsOpen}
           pagesOpen={pagesOpen}
+          panelsHidden={panelsHidden}
           sectionsSort={sectionsSort}
           pagesSort={pagesSort}
           sortedSections={sortedSections}
           sortedPages={sortedPages}
           onToggleSections={() => setSectionsOpen(o => !o)}
           onTogglePages={() => setPagesOpen(o => !o)}
+          onTogglePanels={() => setPanelsHidden(p => !p)}
           onSectionsSortChange={setSectionsSort}
           onPagesSortChange={setPagesSort}
           onSelectNotebook={(id) => {

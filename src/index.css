@@ -969,6 +969,45 @@ html, body, #root {
   opacity: .5;
 }
 
+/* 노트북스 헤더 안의 행 (라벨 + 패널 토글 버튼) */
+.sidebar-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.sidebar-panels-toggle {
+  width: 22px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--sidebar-text);
+  opacity: .55;
+  cursor: pointer;
+  transition: opacity 150ms var(--ease), background 150ms var(--ease), border-color 150ms var(--ease);
+}
+.sidebar-panels-toggle:hover {
+  opacity: 1;
+  background: var(--border);
+  border-color: var(--border-strong);
+}
+
+/* ── 노트북스만 보이게: sections/pages를 왼쪽으로 숨김 ── */
+.sidebar-sections,
+.sidebar-pages {
+  transition: transform 280ms var(--ease), opacity 200ms var(--ease);
+}
+.sidebar-container.panels-hidden .sidebar-sections,
+.sidebar-container.panels-hidden .sidebar-pages {
+  transform: translateX(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .sidebar-list {
   flex: 1;
   overflow-y: auto;
