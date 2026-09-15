@@ -73,6 +73,12 @@ export const CaretRightIcon = ({ size, ...p }) => (
   </Svg>
 )
 
+export const CaretLeftIcon = ({ size, ...p }) => (
+  <Svg size={size} {...p}>
+    <path d="m165.66 122.34-80-80a8 8 0 0 1 11.32-11.32l74.35 74.34-74.35 74.34a8 8 0 0 1-11.32-11.32l80-80a8 8 0 0 1 0 11.32Z"/>
+  </Svg>
+)
+
 export const SunIcon = ({ size, ...p }) => (
   <Svg size={size} stroke="currentColor" strokeWidth="16" {...p}>
     <circle cx="128" cy="128" r="56" />
