@@ -39,13 +39,26 @@ const TrashIcon = () => (
   </svg>
 )
 
+const SunIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="4"/>
+    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+  </svg>
+)
+const MoonIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+  </svg>
+)
+
 export default function Toolbar({
   isDrawMode, onToggleMode,
   penColor, onColorChange,
   penWidth, onWidthChange,
   penTool, onToolChange,
   onUndo, onClear,
-  breadcrumb, hasStrokes
+  breadcrumb, hasStrokes,
+  theme, onToggleTheme,
 }) {
   return (
     <div className="toolbar">
@@ -59,6 +72,15 @@ export default function Toolbar({
       </div>
 
       <div className="toolbar-divider" />
+
+      {/* Theme toggle — light/dark */}
+      <button
+        className="tb-icon-btn theme-toggle"
+        onClick={onToggleTheme}
+        title={theme === 'light' ? '다크모드로 전환' : '라이트모드로 전환'}
+      >
+        {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+      </button>
 
       {/* Mode toggle */}
       <div className="toolbar-group">
