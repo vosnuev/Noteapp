@@ -10,7 +10,7 @@ const uid = () => Math.random().toString(36).slice(2)
 
 export default function ContentArea({
   page, isDrawMode,
-  penColor, penWidth, penTool, penOpacity,
+  penColor, penWidth, penTool, penOpacity, eraserMode, setEraserMode,
   drawTools, activeDrawToolId,
   onSelectDrawTool, onUpdateDrawTool, onAddDrawTool, onRemoveDrawTool,
   onUndoStrokes, onClearStrokes,
@@ -208,6 +208,7 @@ export default function ContentArea({
             penWidth={penWidth}
             penTool={penTool}
             penOpacity={penOpacity}
+            eraserMode={eraserMode}
             strokes={page.strokes}
             onChange={onStrokesChange}
             onDrawStart={handleDrawStart}
@@ -245,6 +246,8 @@ export default function ContentArea({
         <FloatingDrawTools
           drawTools={drawTools}
           activeDrawToolId={activeDrawToolId}
+          eraserMode={eraserMode}
+          setEraserMode={setEraserMode}
           onSelectTool={onSelectDrawTool}
           onUpdateTool={onUpdateDrawTool}
           onAddTool={onAddDrawTool}

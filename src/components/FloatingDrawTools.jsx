@@ -12,6 +12,7 @@ const WIDTH_PRESETS = [1, 2, 3, 5, 8, 12]
 
 export default function FloatingDrawTools({
   drawTools, activeDrawToolId,
+  eraserMode, setEraserMode,
   onSelectTool, onUpdateTool, onAddTool, onRemoveTool,
   onUndo, onClear, hasStrokes,
 }) {
@@ -231,6 +232,63 @@ export default function FloatingDrawTools({
         <div className="fdt-chips">
           {eraser && renderToolChip(eraser)}
         </div>
+
+        {/* 모드 토글: 픽셀 / 스트로크 */}
+        {eraser && (
+          <div className="fdt-eraser-mode">
+            <button
+              className={`fdt-mode-btn ${eraserMode === 'pixel' ? 'active' : ''}`}
+              onClick={() => setEraserMode('pixel')}
+            >
+              <span className="fdt-mode-icon pixel">
+                <svg viewBox="0 0 20 20" width="11" height="11" fill="currentColor">
+                  <path d="M3 3h6v6H3V3zm0 8h6v6H3v-6zm8-8h6v6h-6V3zm0 8h6v6h-6v-6z"/>
+                </svg>
+              </span>
+              픽셀 지우개
+            </button>
+            <button
+              className={`fdt-mode-btn ${eraserMode === 'stroke' ? 'active' : ''}`}
+              onClick={() => setEraserMode('stroke')}
+            >
+              <span className="fdt-mode-icon stroke">
+                <svg viewBox="0 0 20 20" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M3 10 Q 5 4, 8 7 T 14 11 T 17 9" strokeLinecap="round"/>
+                </svg>
+              </span>
+              스트로크 지우개
+            </button>
+          </div>
+        )}
+
+        {/* 굵기 슬라이더 (지우개 두께) */}
+        {eraser && (
+          <div className="fdt-controls">
+            <div className="fdt-control-row">
+              <span className="fdt-control-label">굵기</span>
+              <input
+                type="range"
+                min="6"
+                max="60"
+                value={eraser.width}
+                onChange={e => onUpdateTool(eraser.id, { width: Number(e.target.value) })}
+                className="fdt-slider"
+              />
+              <span className="fdt-control-val">{eraser.width}</span>
+            </div>
+            <div className="fdt-presets">
+              {[10, 18, 28, 40, 60].map(w => (
+                <button
+                  key={w}
+                  className={`fdt-preset ${eraser.width === w ? 'active' : ''}`}
+                  onClick={() => onUpdateTool(eraser.id, { width: w })}
+                >
+                  {w}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="fdt-divider" />

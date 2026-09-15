@@ -401,6 +401,44 @@ html, body, #root {
   color: var(--danger);
 }
 
+/* ── Eraser mode toggle ── */
+.fdt-eraser-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 0 0;
+}
+.fdt-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 200ms var(--ease-spring);
+}
+.fdt-mode-btn:hover { background: var(--border); color: var(--text-primary); }
+.fdt-mode-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.fdt-mode-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.15);
+}
+.fdt-mode-btn:not(.active) .fdt-mode-icon { background: var(--border); }
+
 /* ============================================================
    TOOLBAR (simplified)
    ============================================================ */

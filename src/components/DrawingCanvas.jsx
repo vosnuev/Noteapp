@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 
-export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, penOpacity = 1, strokes, onChange, onDrawStart, onDrawEnd }) {
+export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, penOpacity = 1, eraserMode = 'pixel', strokes, onChange, onDrawStart, onDrawEnd }) {
   const canvasRef   = useRef(null)
   const isDown      = useRef(false)
   const currentPts  = useRef([])
@@ -112,12 +112,51 @@ export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, p
     onDrawStart?.()
   }, [isActive, applySize, onDrawStart])
 
+  /* ── Stroke eraser: pointer 위치와 가장 가까운 stroke를 통째로 삭제 ── */
+  const distToSegment = (px, py, x1, y1, x2, y2) => {
+    const dx = x2 - x1, dy = y2 - y1
+    const lenSq = dx * dx + dy * dy
+    if (lenSq === 0) return Math.hypot(px - x1, py - y1)
+    let t = ((px - x1) * dx + (py - y1) * dy) / lenSq
+    t = Math.max(0, Math.min(1, t))
+    const projX = x1 + t * dx
+    const projY = y1 + t * dy
+    return Math.hypot(px - projX, py - projY)
+  }
+
+  const findHitStroke = (pos, radius) => {
+    const px = pos.x, py = pos.y
+    for (let si = strokesRef.current.length - 1; si >= 0; si--) {
+      const s = strokesRef.current[si]
+      const pts = s.points || []
+      const r = radius + (s.width || 1) / 2
+      for (let i = 0; i < pts.length - 1; i++) {
+        if (distToSegment(px, py, pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y) <= r) {
+          return s.id
+        }
+      }
+    }
+    return null
+  }
+
   const onPointerMove = useCallback((e) => {
     if (!isDown.current || !isActive) return
     e.preventDefault()
-    currentPts.current.push(getPos(e))
+    const pos = getPos(e)
+    // ── 스트로크 지우개: pointer 이동 시 hit한 stroke 통째로 제거 ──
+    if (penTool === 'eraser' && eraserMode === 'stroke') {
+      const hitId = findHitStroke(pos, penWidth)
+      if (hitId) {
+        const next = strokesRef.current.filter(s => s.id !== hitId)
+        strokesRef.current = next
+        redraw()
+        onChange(next)
+      }
+      return
+    }
+    currentPts.current.push(pos)
     redraw({ points: currentPts.current, color: penColor, width: penWidth, tool: penTool, opacity: penTool === 'highlighter' ? penOpacity : 1 })
-  }, [isActive, penColor, penWidth, penTool, redraw])
+  }, [isActive, penColor, penWidth, penTool, penOpacity, eraserMode, redraw, onChange])
 
   const onPointerUp = useCallback((e) => {
     if (!isDown.current) return

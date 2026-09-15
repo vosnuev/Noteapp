@@ -208,6 +208,7 @@ export default function App() {
   ]
   const [drawTools, setDrawTools] = useState(defaultDrawTools)
   const [activeDrawToolId, setActiveDrawToolId] = useState('dt-ink')
+  const [eraserMode, setEraserMode] = useState('pixel') // 'pixel' | 'stroke'
   const activeDrawTool = drawTools.find(t => t.id === activeDrawToolId) || defaultDrawTools[0]
   const penColor = activeDrawTool.color
   const penWidth = activeDrawTool.width
@@ -473,6 +474,8 @@ export default function App() {
             penWidth={penWidth}
             penTool={penTool}
             penOpacity={penOpacity}
+            eraserMode={eraserMode}
+            setEraserMode={setEraserMode}
             drawTools={drawTools}
             activeDrawToolId={activeDrawToolId}
             onSelectDrawTool={handleSelectDrawTool}
