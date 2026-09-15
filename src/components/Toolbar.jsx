@@ -1,9 +1,10 @@
-import { SunIcon, MoonIcon } from './Icons.jsx'
+import { SunIcon, MoonIcon, ShareIcon } from './Icons.jsx'
 
 export default function Toolbar({
   isDrawMode, onToggleMode,
   breadcrumb,
   theme, onToggleTheme,
+  onShare, canShare,
 }) {
   return (
     <div className="toolbar">
@@ -41,6 +42,17 @@ export default function Toolbar({
       </div>
 
       <div style={{ flex: 1 }} />
+
+      {/* Share note */}
+      {canShare && (
+        <button
+          className="tb-icon-btn share-btn-tb"
+          onClick={onShare}
+          title="노트 공유 (md / PDF / 링크)"
+        >
+          <ShareIcon />
+        </button>
+      )}
 
       {/* Theme toggle */}
       <button

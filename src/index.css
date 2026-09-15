@@ -118,8 +118,220 @@ html, body, #root {
 }
 
 /* ============================================================
-   FLOATING DRAW TOOLS
+   SHARE MODAL
    ============================================================ */
+.share-modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,15,20,0.5);
+  backdrop-filter: blur(20px) saturate(1.2);
+  -webkit-backdrop-filter: blur(20px) saturate(1.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  animation: smBgIn 500ms var(--ease-spring);
+}
+@keyframes smBgIn { from { opacity: 0; } to { opacity: 1; } }
+
+.share-modal {
+  width: 540px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 64px);
+  background: var(--content-bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--shadow-lg);
+  animation: smIn 600ms var(--ease-spring);
+  overflow: hidden;
+}
+@keyframes smIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.share-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.share-modal-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+.share-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms var(--ease-spring);
+}
+.share-modal-close:hover { background: var(--border); color: var(--text-primary); }
+
+.share-modal-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.share-modal-subtitle strong { color: var(--text-primary); font-weight: 600; }
+.share-modal-meta {
+  font-size: 11px;
+  background: var(--border);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-family: 'Geist Mono', monospace;
+}
+
+.share-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--border);
+  border-radius: 12px;
+}
+.share-tab {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: 9px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 250ms var(--ease-spring);
+}
+.share-tab:hover { color: var(--text-primary); }
+.share-tab.active {
+  background: var(--content-bg);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.share-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.share-preview {
+  flex: 1;
+  min-height: 200px;
+  max-height: 320px;
+  overflow: auto;
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.share-info {
+  padding: 14px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  font-size: 12.5px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.share-link-row {
+  display: flex;
+  gap: 6px;
+}
+.share-link-input {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Geist Mono', monospace;
+  font-size: 11.5px;
+  outline: none;
+}
+.share-link-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.share-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 200ms var(--ease-spring);
+}
+.share-btn:hover { background: var(--border); }
+.share-btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.share-btn.primary:hover { background: var(--accent-hover); }
+
+/* Toolbar share 버튼 색 */
+.share-btn-tb { color: var(--accent); }
+.share-btn-tb:hover { background: var(--accent-soft); }
+
+/* ============================================================
+   PRINT (PDF export) — 깔끔한 출력
+   ============================================================ */
+@media print {
+  @page { margin: 18mm; }
+  body, html, #root { background: white !important; overflow: visible !important; height: auto !important; }
+  body::before { display: none !important; }
+  .app, .app-body, .sidebar-container, .toolbar, .app-body > *:not(.content-area),
+  .floating-draw-tools, .draw-mode-banner, .page-add-area, .block-del-btn-wrap,
+  .text-format-bar, .share-modal-bg, .cal-view, .cal-modal-bg { display: none !important; }
+  .content-area, .content-scroll { overflow: visible !important; height: auto !important; padding: 0 !important; }
+  .content-paper { background: white !important; box-shadow: none !important; padding: 0 !important; max-width: none !important; }
+  canvas { display: none !important; }
+  .block-wrapper, .block-text, .block-heading, .block-todo, .block-table,
+  .block-kanban, .block-math, .block-code, .block-markdown, .block-calendar,
+  .block-image, .block-pdf { page-break-inside: avoid; }
+  body { color: #000 !important; }
+  .note-title { font-size: 28px !important; font-weight: 700; margin-bottom: 16px; color: #000 !important; }
+}
+
 .floating-draw-tools {
   position: absolute;
   top: 50%;

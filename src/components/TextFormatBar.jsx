@@ -159,6 +159,32 @@ export default function TextFormatBar({ isDrawMode }) {
 
       <div className="fmt-sep" />
 
+      {/* Lists & checklist */}
+      <button className="fmt-btn" onMouseDown={e => { e.preventDefault(); exec('insertUnorderedList') }} title="글머리 기호 목록"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M80 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H88a8 8 0 0 1-8-8m8 72h128a8 8 0 0 0 0-16H88a8 8 0 0 0 0 16m128 56H88a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16M36 64a8 8 0 0 0-8 8v8a8 8 0 0 0 16 0v-8a8 8 0 0 0-8-8m0 64a8 8 0 0 0-8 8v8a8 8 0 0 0 16 0v-8a8 8 0 0 0-8-8m0 64a8 8 0 0 0-8 8v8a8 8 0 0 0 16 0v-8a8 8 0 0 0-8-8"/></svg></button>
+      <button className="fmt-btn" onMouseDown={e => { e.preventDefault(); exec('insertOrderedList') }} title="번호 목록"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M88 64a8 8 0 0 1 8-8h128a8 8 0 0 1 0 16H96a8 8 0 0 1-8-8m8 72h128a8 8 0 0 0 0-16H96a8 8 0 0 0 0 16m128 56H96a8 8 0 0 0 0 16h128a8 8 0 0 0 0-16M40 56a8 8 0 0 0-8 8v8a8 8 0 0 0 7.07 8c4.74 0 8.93-3.4 8.93-8v-8a8 8 0 0 0-8-8m0 64a8 8 0 0 0-8 8v.82c0 4.6 3.19 8.18 8 8.18s8-3.58 8-8.18a8 8 0 0 0-8-8.82m0 64a8 8 0 0 0-8 8v.82c0 4.6 3.19 8.18 8 8.18s8-3.58 8-8.18a8 8 0 0 0-8-8.82"/></svg></button>
+      <button className="fmt-btn" onMouseDown={e => {
+        e.preventDefault()
+        const sel = window.getSelection()
+        if (!sel || sel.isCollapsed) return
+        const text = sel.toString()
+        const url = prompt('링크 URL을 입력하세요:', text.startsWith('http') ? text : 'https://')
+        if (url) exec('createLink', url)
+      }} title="링크 삽입"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M137.54 186.36a8 8 0 0 1 0 11.31l-9.94 10a52 52 0 0 1-73.55-73.54l24.55-24.56a52 52 0 0 1 71.07-2.28a8 8 0 1 1-10.6 12a36 36 0 0 0-49.2 1.59l-24.55 24.55a36 36 0 0 0 50.91 50.91l9.94-9.94a8 8 0 0 1 11.37 0Zm70.41-138.31a52.07 52.07 0 0 0-73.55-.01l-9.94 9.95a8 8 0 0 0 11.32 11.32l9.94-9.94a36 36 0 0 1 50.91 50.91l-24.55 24.55a36 36 0 0 1-49.2 1.59a8 8 0 0 0-10.6 12a52 52 0 0 0 71.07-2.28l24.55-24.55a52.07 52.07 0 0 0 0-73.54"/></svg></button>
+
+      <div className="fmt-sep" />
+
+      {/* Indent / outdent */}
+      <button className="fmt-btn" onMouseDown={e => { e.preventDefault(); exec('outdent') }} title="내어쓰기"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M216 128a8 8 0 0 1-8 8H75.31l34.35 34.34a8 8 0 0 1-11.32 11.32l-48-48a8 8 0 0 1 0-11.32l48-48a8 8 0 0 1 11.32 11.32L75.31 120H208a8 8 0 0 1 8 8M32 56a8 8 0 0 0-8 8v128a8 8 0 0 0 16 0V64a8 8 0 0 0-8-8"/></svg></button>
+      <button className="fmt-btn" onMouseDown={e => { e.preventDefault(); exec('indent') }} title="들여쓰기"><svg width="14" height="14" viewBox="0 0 256 256" fill="currentColor"><path d="M216 128a8 8 0 0 1-8 8H115.31l34.35 34.34a8 8 0 0 1-11.32 11.32l-48-48a8 8 0 0 1 0-11.32l48-48a8 8 0 0 1 11.32 11.32L115.31 120H208a8 8 0 0 1 8 8M32 56a8 8 0 0 0-8 8v128a8 8 0 0 0 16 0V64a8 8 0 0 0-8-8"/></svg></button>
+
+      <div className="fmt-sep" />
+
+      {/* Super / sub script */}
+      <button className="fmt-btn fmt-sci" onMouseDown={e => { e.preventDefault(); exec('superscript') }} title="위 첨자">A<sup>+</sup></button>
+      <button className="fmt-btn fmt-sci" onMouseDown={e => { e.preventDefault(); exec('subscript') }} title="아래 첨자">A<sub>+</sub></button>
+
+      <div className="fmt-sep" />
+
       {/* Text color */}
       <div className="fmt-color-wrap">
         <button

@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar.jsx'
 import Toolbar from './components/Toolbar.jsx'
 import ContentArea from './components/ContentArea.jsx'
 import CalendarView from './components/CalendarView.jsx'
+import ShareModal from './components/ShareModal.jsx'
 
 const uid = () => Math.random().toString(36).slice(2)
 const STORAGE_KEY = 'noteapp-data-v1'
@@ -196,6 +197,7 @@ export default function App() {
   const [pagesSort, setPagesSort] = useState(initialUi.pagesSort ?? 'default')
   const [isDrawMode, setIsDrawMode] = useState(false)
   const [theme, setTheme] = useState(loadTheme)
+  const [shareOpen, setShareOpen] = useState(false)
 
   /* ── 드로우 도구함: 사용자 정의 펜/형광펜/지우개 ── */
   const defaultDrawTools = [
@@ -431,6 +433,8 @@ export default function App() {
         hasStrokes={selectedPage?.strokes?.length > 0}
         theme={theme}
         onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+        onShare={() => setShareOpen(true)}
+        canShare={activeTab === 'notes' && !!selectedPage}
       />
       <div className="app-body">
         <Sidebar
@@ -501,6 +505,14 @@ export default function App() {
           />
         )}
       </div>
+
+      {/* 공유 모달 */}
+      {shareOpen && selectedPage && (
+        <ShareModal
+          page={selectedPage}
+          onClose={() => setShareOpen(false)}
+        />
+      )}
     </div>
   )
 }
