@@ -1,13 +1,17 @@
 // Phosphor light-weight 스타일 라인 아이콘 (256x256 viewBox, currentColor)
 // Premium 라인 두께, AI 티 안 나는 정통 라인 아이콘
 
-const Svg = ({ size = 18, children, ...props }) => (
+const Svg = ({ size = 18, fill = 'currentColor', children, stroke = null, strokeWidth = null, ...props }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
     height={size}
     viewBox="0 0 256 256"
-    fill="currentColor"
+    fill={stroke ? 'none' : fill}
+    stroke={stroke || 'none'}
+    strokeWidth={strokeWidth || 0}
+    strokeLinecap="round"
+    strokeLinejoin="round"
     style={{ flexShrink: 0, verticalAlign: 'middle' }}
     {...props}
   >
@@ -70,14 +74,22 @@ export const CaretRightIcon = ({ size, ...p }) => (
 )
 
 export const SunIcon = ({ size, ...p }) => (
-  <Svg size={size} {...p}>
-    <path d="M120 40V16a8 8 0 0 1 16 0v24a8 8 0 0 1-16 0m72 88a64 64 0 1 1-64-64 64.07 64.07 0 0 1 64 64m-16 0a48 48 0 1 0-48 48 48.05 48.05 0 0 0 48-48M58.34 69.66a8 8 0 0 0 11.32-11.32l-16-16a8 8 0 0 0-11.32 11.32Zm0 116.68-16 16a8 8 0 0 0 11.32 11.32l16-16a8 8 0 0 0-11.32-11.32ZM192 72a8 8 0 0 0 5.66-2.34l16-16a8 8 0 0 0-11.32-11.32l-16 16A8 8 0 0 0 192 72m5.66 114.34a8 8 0 0 0-11.32 11.32l16 16a8 8 0 0 0 11.32-11.32ZM40 136a8 8 0 0 0-8-8H8a8 8 0 0 0 0 16h24a8 8 0 0 0 8-8m208-8h-24a8 8 0 0 0 0 16h24a8 8 0 0 0 0-16m-104 88a8 8 0 0 0-8 8v24a8 8 0 0 0 16 0v-24a8 8 0 0 0-8-8"/>
+  <Svg size={size} stroke="currentColor" strokeWidth="16" {...p}>
+    <circle cx="128" cy="128" r="56" />
+    <line x1="128" y1="32" x2="128" y2="64" />
+    <line x1="128" y1="192" x2="128" y2="224" />
+    <line x1="32" y1="128" x2="64" y2="128" />
+    <line x1="192" y1="128" x2="224" y2="128" />
+    <line x1="60.12" y1="60.12" x2="82.51" y2="82.51" />
+    <line x1="173.49" y1="173.49" x2="195.88" y2="195.88" />
+    <line x1="60.12" y1="195.88" x2="82.51" y2="173.49" />
+    <line x1="173.49" y1="82.51" x2="195.88" y2="60.12" />
   </Svg>
 )
 
 export const MoonIcon = ({ size, ...p }) => (
-  <Svg size={size} {...p}>
-    <path d="M233.54 142.23a8 8 0 0 0-8-2 88 88 0 0 1-109.8-109.8 8 8 0 0 0-10-10 104.06 104.06 0 0 0-52.91 168.79 104 104 0 0 0 169.71-52.91 8 8 0 0 0-9-9Zm-11.63 46.62A88 88 0 0 1 67.16 75.18a104 104 0 0 0 95.66 95.66 88 88 0 0 1-40.91 18Z"/>
+  <Svg size={size} stroke="currentColor" strokeWidth="16" {...p}>
+    <path d="M224 124.51a88 88 0 0 1-104.51-104.51 8 8 0 0 0-10.4-10.4 104.06 104.06 0 0 0 115.31 115.31 8 8 0 0 0 10.4-10.4 88 88 0 0 1-10.8-10Z" />
   </Svg>
 )
 
@@ -202,7 +214,11 @@ export const FileTextIcon = ({ size, ...p }) => (
 )
 
 export const ShareIcon = ({ size, ...p }) => (
-  <Svg size={size} {...p}>
-    <path d="M229.66 109.66-48-48a8 8 0 0 0-11.32 11.32L204.69 88H152a88 88 0 0 0-86.66 68.84a8 8 0 0 0 5.13 10 8.2 8.2 0 0 0 2.45.39 8 8 0 0 0 7.55-5.56A72 72 0 0 1 152 104h52.69l-34.35 34.34a8 8 0 0 0 11.32 11.32l48-48a8 8 0 0 0 0-11.32M88 152a8 8 0 0 0-8-8H24.92l37.39-37.38a8 8 0 0 0-11.32-11.32l-48 48a8 8 0 0 0 0 11.32l48 48a8 8 0 0 0 11.32-11.32L24.92 160H80a72 72 0 0 1 71.65 80.31a8 8 0 0 0 5.56 7.55 7.8 7.8 0 0 0 2.45.39 8 8 0 0 0 7.55-5.13A88 88 0 0 0 88 152"/>
+  <Svg size={size} stroke="currentColor" strokeWidth="16" {...p}>
+    <circle cx="64" cy="128" r="24" />
+    <circle cx="192" cy="64" r="24" />
+    <circle cx="192" cy="192" r="24" />
+    <line x1="84" y1="116" x2="174" y2="76" />
+    <line x1="84" y1="140" x2="174" y2="180" />
   </Svg>
 )

@@ -15,7 +15,7 @@ export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, p
     if (stroke.tool === 'eraser') {
       ctx.globalCompositeOperation = 'destination-out'
       ctx.strokeStyle = 'rgba(0,0,0,1)'
-      ctx.lineWidth   = stroke.width * 5
+      ctx.lineWidth   = stroke.width
     } else if (stroke.tool === 'highlighter') {
       ctx.globalCompositeOperation = 'source-over'
       ctx.globalAlpha  = stroke.opacity ?? 0.3
@@ -129,7 +129,14 @@ export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, p
     for (let si = strokesRef.current.length - 1; si >= 0; si--) {
       const s = strokesRef.current[si]
       const pts = s.points || []
-      const r = radius + (s.width || 1) / 2
+      // 지우개 굵기 + stroke 자체 굵기의 절반을 합쳐서 hit radius 산정
+      const r = Math.max(radius, (s.width || 1) / 2) + radius * 0.3
+      // 단일 점 stroke도 잡기 위해 점 자체와의 거리도 검사
+      for (let i = 0; i < pts.length; i++) {
+        if (distToSegment(px, py, pts[i].x, pts[i].y, pts[i].x, pts[i].y) <= r) {
+          return s.id
+        }
+      }
       for (let i = 0; i < pts.length - 1; i++) {
         if (distToSegment(px, py, pts[i].x, pts[i].y, pts[i + 1].x, pts[i + 1].y) <= r) {
           return s.id

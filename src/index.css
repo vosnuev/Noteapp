@@ -588,6 +588,54 @@ html, body, #root {
   box-shadow: 0 0 0 1.5px var(--accent);
 }
 
+/* 자유 컬러 피커 (native color picker + HEX input) */
+.fdt-color-custom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.fdt-color-native {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+}
+.fdt-color-native::-webkit-color-swatch-wrapper { padding: 2px; }
+.fdt-color-native::-webkit-color-swatch { border: none; border-radius: 4px; }
+.fdt-color-native::-moz-color-swatch { border: none; border-radius: 4px; }
+.fdt-color-hex {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px 7px;
+  text-transform: lowercase;
+  outline: none;
+}
+.fdt-color-hex:focus { border-color: var(--accent); }
+.fdt-color-done {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.fdt-color-done:hover { background: var(--accent); color: white; }
+
 .fdt-actions {
   display: flex;
   gap: 6px;

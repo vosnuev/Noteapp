@@ -3,12 +3,29 @@ import {
   PenIcon, EraserIcon, UndoIcon, TrashIcon, PlusIcon, XIcon,
 } from './Icons.jsx'
 
-const BRAND_COLORS = [
-  '#1c1c1e', '#6d28d9', '#ea580c', '#0f766e',
-  '#15803d', '#1e40af', '#9f1239', '#a16207',
-]
-
 const WIDTH_PRESETS = [1, 2, 3, 5, 8, 12]
+
+// HEX 입력이 항상 #RRGGBB 형태가 되도록 보정
+const normalizeHex = (v) => {
+  if (!v) return '#000000'
+  let s = String(v).trim()
+  if (!s.startsWith('#')) s = '#' + s
+  // #RGB → #RRGGBB 확장
+  if (/^#[0-9a-fA-F]{3}$/.test(s)) {
+    s = '#' + s.slice(1).split('').map(c => c + c).join('')
+  }
+  if (/^#[0-9a-fA-F]{6}$/.test(s)) return s
+  return '#000000'
+}
+
+// HEX 입력을 사용자가 보고 입력하는 형태(#RGB 또는 #RRGGBB)로 정규화
+const shortHex = (v) => {
+  const s = normalizeHex(v)
+  if (/^#([0-9a-fA-F])\1([0-9a-fA-F])\2([0-9a-fA-F])\3$/.test(s)) {
+    return s.slice(1).split('').filter((_, i) => i % 2 === 0).join('')
+  }
+  return s.slice(1)
+}
 
 export default function FloatingDrawTools({
   drawTools, activeDrawToolId,
@@ -124,17 +141,36 @@ export default function FloatingDrawTools({
               </button>
               {colorPickerFor === activePen.id && (
                 <div className="fdt-color-grid">
-                  {BRAND_COLORS.map(c => (
-                    <button
-                      key={c}
-                      className={`fdt-color-pick ${c === activePen.color ? 'selected' : ''}`}
-                      style={{ background: c }}
-                      onClick={() => {
-                        onUpdateTool(activePen.id, { color: c })
-                        setColorPickerFor(null)
-                      }}
+                  <div className="fdt-color-custom">
+                    <input
+                      type="color"
+                      value={normalizeHex(activePen.color)}
+                      onChange={e => onUpdateTool(activePen.id, { color: e.target.value })}
+                      className="fdt-color-native"
+                      title="컬러 피커로 색 선택"
                     />
-                  ))}
+                    <input
+                      type="text"
+                      value={shortHex(activePen.color)}
+                      onChange={e => {
+                        const v = e.target.value
+                        if (/^[0-9a-fA-F]{0,6}$/.test(v)) {
+                          const full = v.length === 3 || v.length === 6 ? '#' + v : null
+                          if (full) onUpdateTool(activePen.id, { color: full })
+                        }
+                      }}
+                      placeholder="#RRGGBB"
+                      maxLength={7}
+                      className="fdt-color-hex"
+                      spellCheck={false}
+                    />
+                    <button
+                      className="fdt-color-done"
+                      onClick={() => setColorPickerFor(null)}
+                    >
+                      완료
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -203,17 +239,36 @@ export default function FloatingDrawTools({
               </button>
               {colorPickerFor === activeHl.id && (
                 <div className="fdt-color-grid">
-                  {BRAND_COLORS.map(c => (
-                    <button
-                      key={c}
-                      className={`fdt-color-pick ${c === activeHl.color ? 'selected' : ''}`}
-                      style={{ background: c }}
-                      onClick={() => {
-                        onUpdateTool(activeHl.id, { color: c })
-                        setColorPickerFor(null)
-                      }}
+                  <div className="fdt-color-custom">
+                    <input
+                      type="color"
+                      value={normalizeHex(activeHl.color)}
+                      onChange={e => onUpdateTool(activeHl.id, { color: e.target.value })}
+                      className="fdt-color-native"
+                      title="컬러 피커로 색 선택"
                     />
-                  ))}
+                    <input
+                      type="text"
+                      value={shortHex(activeHl.color)}
+                      onChange={e => {
+                        const v = e.target.value
+                        if (/^[0-9a-fA-F]{0,6}$/.test(v)) {
+                          const full = v.length === 3 || v.length === 6 ? '#' + v : null
+                          if (full) onUpdateTool(activeHl.id, { color: full })
+                        }
+                      }}
+                      placeholder="#RRGGBB"
+                      maxLength={7}
+                      className="fdt-color-hex"
+                      spellCheck={false}
+                    />
+                    <button
+                      className="fdt-color-done"
+                      onClick={() => setColorPickerFor(null)}
+                    >
+                      완료
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
