@@ -242,6 +242,24 @@ export default function App() {
     try { localStorage.setItem(THEME_KEY, theme) } catch {}
   }, [theme])
 
+  /* ── 테마 변경 시 dt-ink 기본 펜 색상을 모드에 맞게 자동 동기화
+        (사용자가 다른 색으로 바꾼 경우는 건드리지 않음) ── */
+  useEffect(() => {
+    setDrawTools((prev) => {
+      const ink = prev.find((t) => t.id === 'dt-ink')
+      if (!ink) return prev
+      const isLightDefault = ink.color.toLowerCase() === '#1c1c1e'
+      const isDarkDefault  = ['#f4ecff', '#ffffff', '#fff'].includes(ink.color.toLowerCase())
+      if (theme === 'dark' && isLightDefault) {
+        return prev.map((t) => (t.id === 'dt-ink' ? { ...t, color: '#f4ecff' } : t))
+      }
+      if (theme === 'light' && isDarkDefault) {
+        return prev.map((t) => (t.id === 'dt-ink' ? { ...t, color: '#1c1c1e' } : t))
+      }
+      return prev
+    })
+  }, [theme])
+
   /* ── Persist notebooks to localStorage on every change ── */
   useEffect(() => {
     try {

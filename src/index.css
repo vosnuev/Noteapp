@@ -958,8 +958,8 @@ html, body, #root {
 }
 
 /* Theme toggle button */
-.theme-toggle { color: var(--accent); }
-.theme-toggle:hover { background: var(--accent-soft); }
+.theme-toggle { color: var(--text-primary); }
+.theme-toggle:hover { background: var(--accent-soft); color: var(--accent); }
 .sidebar-header-label {
   font-size: 10px;
   font-weight: 600;
