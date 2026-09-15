@@ -232,16 +232,6 @@ export default function ContentArea({
       {/* Floating text-format toolbar */}
       <TextFormatBar isDrawMode={isDrawMode} />
 
-      {/* Draw-mode banner */}
-      {isDrawMode && (
-        <div className={`draw-mode-banner ${saveStatus}`}>
-          {saveStatus === 'drawing' && '✏️ 드로우 중...'}
-          {saveStatus === 'saving'  && '💾 자동저장 중입니다...'}
-          {saveStatus === 'saved'   && '✅ 저장 완료'}
-          {saveStatus === 'idle'    && '✏️ Draw Mode — 콘텐츠 위에 바로 필기하세요'}
-        </div>
-      )}
-
       {/* Floating Draw Tools — Draw 모드일 때만 */}
       {isDrawMode && drawTools && (
         <FloatingDrawTools
