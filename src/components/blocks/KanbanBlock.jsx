@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const COL_COLORS = ['#007AFF', '#FF9500', '#34C759']
+const COL_COLORS = ['#6d28d9', '#ea580c', '#0f766e']
 
 export default function KanbanBlock({ block, onChange }) {
   const [newCards, setNewCards] = useState({})
