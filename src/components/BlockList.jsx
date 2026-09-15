@@ -35,7 +35,6 @@ export default function BlockList({ blocks, onChange, isDrawMode }) {
               contentEditable={!isDrawMode}
               suppressContentEditableWarning
               onBlur={e => updateBlock(block.id, { ...block, text: e.currentTarget.textContent })}
-              suppressContentEditableWarning
             >
               {block.text}
             </div>

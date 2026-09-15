@@ -5,6 +5,8 @@ import SlashMenu from './SlashMenu.jsx'
 import TextFormatBar from './TextFormatBar.jsx'
 import { createBlock, TEMPLATES } from '../templates.js'
 
+const uid = () => Math.random().toString(36).slice(2)
+
 export default function ContentArea({
   page, isDrawMode,
   penColor, penWidth, penTool,
@@ -72,19 +74,29 @@ export default function ContentArea({
   /* ── Insert block from slash menu ── */
   const handleSlashSelect = useCallback((type) => {
     setSlash(s => ({ ...s, open: false }))
+    if (!page) {
+      setInputVal('')
+      return
+    }
+
+    const txt = inputVal.trim()
+    let newBlocks
+    if (type === 'text') {
+      // 사용자가 입력한 텍스트가 있으면 그걸 새 text 블록에 넣어줌
+      newBlocks = [...(page.blocks || []), { id: uid(), type: 'text', text: txt }]
+    } else if (TEMPLATES[type]) {
+      newBlocks = [...(page.blocks || []), ...TEMPLATES[type]()]
+    } else {
+      newBlocks = [...(page.blocks || []), createBlock(type)]
+    }
+
     setInputVal('')
-    if (!page) return
-
-    const newBlocks = TEMPLATES[type]
-      ? [...(page.blocks || []), ...TEMPLATES[type]()]
-      : [...(page.blocks || []), createBlock(type)]
-
     onBlocksChange(newBlocks)
     setTimeout(() => {
       if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
       inputRef.current?.focus()
     }, 60)
-  }, [page, onBlocksChange])
+  }, [page, onBlocksChange, inputVal])
 
   /* ── Bottom input handlers ── */
   const handleInputChange = useCallback((e) => {
@@ -102,12 +114,23 @@ export default function ContentArea({
   const handleInputKeyDown = useCallback((e) => {
     if (slash.open) return  // arrow / enter handled by SlashMenu
 
-    if (e.key === 'Enter' && inputVal.trim()) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       if (!page) return
-      onBlocksChange([...(page.blocks || []), createBlock('text')])
-      // we'll set text separately — for demo, just add empty text block
+      const txt = inputVal.trim()
+      // 입력한 텍스트가 있으면 그걸 새 text 블록에 넣어주고, 그 다음 줄에 새 빈 블록
+      if (txt) {
+        const newBlock = { id: uid(), type: 'text', text: txt }
+        onBlocksChange([...(page.blocks || []), newBlock])
+      } else {
+        // 빈 Enter는 그냥 빈 텍스트 블록 하나 추가
+        onBlocksChange([...(page.blocks || []), createBlock('text')])
+      }
       setInputVal('')
+      setTimeout(() => {
+        if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+        inputRef.current?.focus()
+      }, 30)
     }
     if (e.key === 'Escape') {
       setInputVal('')

@@ -1,16 +1,66 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import Sidebar from './components/Sidebar.jsx'
 import Toolbar from './components/Toolbar.jsx'
 import ContentArea from './components/ContentArea.jsx'
+import CalendarView from './components/CalendarView.jsx'
 
 const uid = () => Math.random().toString(36).slice(2)
+const STORAGE_KEY = 'noteapp-data-v1'
+const EVENTS_KEY = 'noteapp-events-v1'
+const UI_KEY = 'noteapp-ui-v1'
+const THEME_KEY = 'noteapp-theme-v1'
+
+// Noteapp 브랜드 팔레트: deep purple 베이스 + 차분한 보조색들
+// (saturation < 80%, 진한 톤 → neon 느낌 없음, 보라-주황과 어울림)
+export const BRAND_PALETTE = [
+  '#6d28d9',  // 1. Deep Purple (primary)
+  '#ea580c',  // 2. Deep Orange (secondary)
+  '#0f766e',  // 3. Teal
+  '#15803d',  // 4. Forest Green
+  '#a16207',  // 5. Amber
+  '#1e40af',  // 6. Navy
+  '#9f1239',  // 7. Wine
+  '#4a044e',  // 8. Plum
+]
+
+const loadTheme = () => {
+  try {
+    const t = localStorage.getItem(THEME_KEY)
+    if (t === 'light' || t === 'dark') return t
+  } catch {}
+  return 'light'
+}
+
+const loadNotebooks = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : null
+  } catch (e) {
+    console.warn('[noteapp] localStorage load failed:', e)
+    return null
+  }
+}
+
+const loadEvents = () => {
+  try {
+    const raw = localStorage.getItem(EVENTS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? parsed : []
+  } catch (e) {
+    console.warn('[noteapp] events load failed:', e)
+    return []
+  }
+}
 
 const INITIAL_DATA = [
   {
     id: 'nb1', name: 'My Notebook', icon: '📓',
     sections: [
       {
-        id: 'sec1', name: 'Planning', color: '#007AFF',
+        id: 'sec1', name: 'Planning', color: '#6d28d9',
         pages: [
           {
             id: 'p1', name: 'Weekly Planner',
@@ -40,7 +90,7 @@ const INITIAL_DATA = [
         ]
       },
       {
-        id: 'sec2', name: 'Ideas', color: '#FF9500',
+        id: 'sec2', name: 'Ideas', color: '#ea580c',
         pages: [
           {
             id: 'p3', name: 'Brain Dump',
@@ -53,7 +103,7 @@ const INITIAL_DATA = [
         ]
       },
       {
-        id: 'sec3', name: 'Projects', color: '#34C759',
+        id: 'sec3', name: 'Projects', color: '#0f766e',
         pages: [
           {
             id: 'p4', name: 'Project Board',
@@ -75,7 +125,7 @@ const INITIAL_DATA = [
     id: 'nb2', name: 'Study', icon: '📚',
     sections: [
       {
-        id: 'sec4', name: 'Math', color: '#AF52DE',
+        id: 'sec4', name: 'Math', color: '#4a044e',
         pages: [
           {
             id: 'p5', name: '수식 노트',
@@ -90,7 +140,7 @@ const INITIAL_DATA = [
         ]
       },
       {
-        id: 'sec5', name: 'Code', color: '#FF2D55',
+        id: 'sec5', name: 'Code', color: '#9f1239',
         pages: [
           {
             id: 'p6', name: '코드 스니펫',
@@ -108,7 +158,7 @@ const INITIAL_DATA = [
     id: 'nb3', name: 'Work', icon: '💼',
     sections: [
       {
-        id: 'sec6', name: 'Schedule', color: '#FF6B35',
+        id: 'sec6', name: 'Schedule', color: '#a16207',
         pages: [
           {
             id: 'p7', name: '일정',
@@ -124,19 +174,116 @@ const INITIAL_DATA = [
   },
 ]
 
+const loadUi = () => {
+  try {
+    const raw = localStorage.getItem(UI_KEY)
+    if (!raw) return null
+    return JSON.parse(raw)
+  } catch { return null }
+}
+const initialUi = loadUi() || {}
+
 export default function App() {
-  const [notebooks, setNotebooks] = useState(INITIAL_DATA)
-  const [selectedNotebookId, setSelectedNotebookId] = useState('nb1')
-  const [selectedSectionId, setSelectedSectionId] = useState('sec1')
-  const [selectedPageId, setSelectedPageId] = useState('p1')
+  const [notebooks, setNotebooks] = useState(() => loadNotebooks() ?? INITIAL_DATA)
+  const [events, setEvents] = useState(() => loadEvents())
+  const [activeTab, setActiveTab] = useState(initialUi.activeTab ?? 'notes')
+  const [selectedNotebookId, setSelectedNotebookId] = useState(initialUi.selectedNotebookId ?? 'nb1')
+  const [selectedSectionId, setSelectedSectionId] = useState(initialUi.selectedSectionId ?? 'sec1')
+  const [selectedPageId, setSelectedPageId] = useState(initialUi.selectedPageId ?? 'p1')
+  const [sectionsOpen, setSectionsOpen] = useState(initialUi.sectionsOpen ?? true)
+  const [pagesOpen, setPagesOpen] = useState(initialUi.pagesOpen ?? true)
+  const [sectionsSort, setSectionsSort] = useState(initialUi.sectionsSort ?? 'default')
+  const [pagesSort, setPagesSort] = useState(initialUi.pagesSort ?? 'default')
   const [isDrawMode, setIsDrawMode] = useState(false)
-  const [penColor, setPenColor] = useState('#1c1c1e')
+  const [penColor, setPenColor] = useState('#6d28d9')
   const [penWidth, setPenWidth] = useState(3)
   const [penTool, setPenTool] = useState('pen')
+  const [theme, setTheme] = useState(loadTheme)
+
+  /* ── Persist UI state (탭/선택/토글/정렬) ── */
+  useEffect(() => {
+    try {
+      localStorage.setItem(UI_KEY, JSON.stringify({
+        activeTab, selectedNotebookId, selectedSectionId, selectedPageId,
+        sectionsOpen, pagesOpen, sectionsSort, pagesSort,
+      }))
+    } catch (e) { console.warn('[noteapp] ui save failed:', e) }
+  }, [activeTab, selectedNotebookId, selectedSectionId, selectedPageId, sectionsOpen, pagesOpen, sectionsSort, pagesSort])
+
+  /* ── 테마 적용: <html data-theme="..."> + localStorage 영속 ── */
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    try { localStorage.setItem(THEME_KEY, theme) } catch {}
+  }, [theme])
+
+  /* ── Persist notebooks to localStorage on every change ── */
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notebooks))
+    } catch (e) {
+      console.warn('[noteapp] localStorage save failed:', e)
+    }
+  }, [notebooks])
+
+  /* ── Persist calendar events ── */
+  useEffect(() => {
+    try {
+      localStorage.setItem(EVENTS_KEY, JSON.stringify(events))
+    } catch (e) {
+      console.warn('[noteapp] events save failed:', e)
+    }
+  }, [events])
+
+  /* ── If selected ids are invalid after load, fall back to first available ── */
+  useEffect(() => {
+    if (!notebooks.length) return
+    const nb = notebooks.find(n => n.id === selectedNotebookId)
+    if (!nb) {
+      const first = notebooks[0]
+      setSelectedNotebookId(first.id)
+      const sec = first.sections[0]
+      setSelectedSectionId(sec?.id ?? null)
+      setSelectedPageId(sec?.pages[0]?.id ?? null)
+      return
+    }
+    const sec = nb.sections.find(s => s.id === selectedSectionId)
+    if (!sec) {
+      const firstSec = nb.sections[0]
+      setSelectedSectionId(firstSec?.id ?? null)
+      setSelectedPageId(firstSec?.pages[0]?.id ?? null)
+      return
+    }
+    const pg = sec.pages.find(p => p.id === selectedPageId)
+    if (!pg) {
+      setSelectedPageId(sec.pages[0]?.id ?? null)
+    }
+  }, [notebooks])
 
   const selectedNotebook = notebooks.find(n => n.id === selectedNotebookId)
   const selectedSection = selectedNotebook?.sections.find(s => s.id === selectedSectionId)
   const selectedPage = selectedSection?.pages.find(p => p.id === selectedPageId)
+
+  /* ── 정렬된 sections / pages ── */
+  const sortedSections = useMemo(() => {
+    if (!selectedNotebook) return []
+    const arr = [...selectedNotebook.sections]
+    if (sectionsSort === 'name')   arr.sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+    if (sectionsSort === 'pages')  arr.sort((a, b) => b.pages.length - a.pages.length)
+    if (sectionsSort === 'recent') arr.sort((a, b) => {
+      const aTime = Math.max(0, ...a.pages.map(p => p.updatedAt || 0))
+      const bTime = Math.max(0, ...b.pages.map(p => p.updatedAt || 0))
+      return bTime - aTime
+    })
+    return arr
+  }, [selectedNotebook, sectionsSort])
+
+  const sortedPages = useMemo(() => {
+    if (!selectedSection) return []
+    const arr = [...selectedSection.pages]
+    if (pagesSort === 'name')    arr.sort((a, b) => a.name.localeCompare(b.name, 'ko'))
+    if (pagesSort === 'strokes') arr.sort((a, b) => (b.strokes?.length || 0) - (a.strokes?.length || 0))
+    return arr
+  }, [selectedSection, pagesSort])
 
   const updatePage = useCallback((pageId, updater) => {
     setNotebooks(prev => prev.map(nb => ({
@@ -181,7 +328,7 @@ export default function App() {
   const addSection = useCallback(() => {
     const name = window.prompt('섹션 이름:', 'New Section')
     if (!name) return
-    const colors = ['#007AFF','#FF9500','#34C759','#AF52DE','#FF2D55','#FF6B35']
+    const colors = BRAND_PALETTE
     const sec = { id: uid(), name, color: colors[Math.floor(Math.random()*colors.length)], pages: [] }
     setNotebooks(prev => prev.map(nb =>
       nb.id === selectedNotebookId ? { ...nb, sections: [...nb.sections, sec] } : nb
@@ -228,19 +375,37 @@ export default function App() {
         onToolChange={setPenTool}
         onUndo={handleUndo}
         onClear={handleClear}
-        breadcrumb={{
-          notebook: selectedNotebook?.name,
-          section: selectedSection?.name,
-          page: selectedPage?.name,
-        }}
+        breadcrumb={
+          activeTab === 'calendar'
+            ? { notebook: '캘린더', section: '', page: '' }
+            : {
+                notebook: selectedNotebook?.name,
+                section: selectedSection?.name,
+                page: selectedPage?.name,
+              }
+        }
         hasStrokes={selectedPage?.strokes?.length > 0}
+        theme={theme}
+        onToggleTheme={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
       />
       <div className="app-body">
         <Sidebar
+          activeTab={activeTab}
+          onSwitchTab={setActiveTab}
           notebooks={notebooks}
           selectedNotebookId={selectedNotebookId}
           selectedSectionId={selectedSectionId}
           selectedPageId={selectedPageId}
+          sectionsOpen={sectionsOpen}
+          pagesOpen={pagesOpen}
+          sectionsSort={sectionsSort}
+          pagesSort={pagesSort}
+          sortedSections={sortedSections}
+          sortedPages={sortedPages}
+          onToggleSections={() => setSectionsOpen(o => !o)}
+          onTogglePages={() => setPagesOpen(o => !o)}
+          onSectionsSortChange={setSectionsSort}
+          onPagesSortChange={setPagesSort}
           onSelectNotebook={(id) => {
             setSelectedNotebookId(id)
             const nb = notebooks.find(n => n.id === id)
@@ -262,16 +427,23 @@ export default function App() {
           onAddSection={addSection}
           onAddPage={addPage}
         />
-        <ContentArea
-          page={selectedPage}
-          isDrawMode={isDrawMode}
-          penColor={penColor}
-          penWidth={penWidth}
-          penTool={penTool}
-          onStrokesChange={handleStrokesChange}
-          onBlocksChange={handleBlocksChange}
-          onNameChange={handleNameChange}
-        />
+        {activeTab === 'notes' ? (
+          <ContentArea
+            page={selectedPage}
+            isDrawMode={isDrawMode}
+            penColor={penColor}
+            penWidth={penWidth}
+            penTool={penTool}
+            onStrokesChange={handleStrokesChange}
+            onBlocksChange={handleBlocksChange}
+            onNameChange={handleNameChange}
+          />
+        ) : (
+          <CalendarView
+            events={events}
+            onEventsChange={setEvents}
+          />
+        )}
       </div>
     </div>
   )
