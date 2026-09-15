@@ -356,6 +356,90 @@ html, body, #root {
   to   { opacity: 1; transform: translateY(-50%) translateX(0); }
 }
 
+/* ── 패널 헤더 (접기 버튼) ── */
+.fdt-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2px;
+}
+.fdt-panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.fdt-panel-collapse {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transform: rotate(180deg);
+  transition: background 150ms var(--ease), color 150ms var(--ease);
+}
+.fdt-panel-collapse:hover {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* ── 접힌 상태: 동그라미 버튼만 표시 ── */
+.floating-draw-tools--collapsed {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  z-index: 50;
+  animation: fdtOut 280ms var(--ease);
+}
+@keyframes fdtOut {
+  from { opacity: 1; transform: translateY(-50%) translateX(0); }
+  to   { opacity: 0.9; transform: translateY(-50%) translateX(0); }
+}
+.fdt-collapse-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--content-bg);
+  border: 2px solid var(--border-strong);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms var(--ease-spring), border-color 200ms var(--ease), box-shadow 200ms var(--ease);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+}
+.fdt-collapse-btn:hover {
+  transform: scale(1.08);
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(109, 40, 217, 0.18);
+}
+.fdt-collapse-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.4), 0 1px 3px rgba(0,0,0,0.15);
+}
+
 .fdt-section {
   display: flex;
   flex-direction: column;

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  PenIcon, EraserIcon, UndoIcon, TrashIcon, PlusIcon, XIcon,
+  PenIcon, EraserIcon, UndoIcon, TrashIcon, PlusIcon, XIcon, CaretRightIcon,
 } from './Icons.jsx'
 
 const WIDTH_PRESETS = [1, 2, 3, 5, 8, 12]
@@ -34,6 +34,36 @@ export default function FloatingDrawTools({
   onUndo, onClear, hasStrokes,
 }) {
   const [colorPickerFor, setColorPickerFor] = useState(null) // tool id
+  const [collapsed, setCollapsed] = useState(false) // true면 동그라미 아이콘으로 축소
+
+  const activeTool = drawTools.find(t => t.id === activeDrawToolId)
+  const isEraser = activeTool?.type === 'eraser'
+
+  // ── 접힌 상태: 현재 활성 도구 색/모양의 동그라미 버튼 ──
+  if (collapsed) {
+    return (
+      <div className="floating-draw-tools floating-draw-tools--collapsed">
+        <button
+          className="fdt-collapse-btn"
+          onClick={() => setCollapsed(false)}
+          title="드로우 도구 열기"
+          aria-label="드로우 도구 열기"
+        >
+          {isEraser ? (
+            <EraserIcon size={16} />
+          ) : (
+            <span
+              className="fdt-collapse-swatch"
+              style={{
+                background: activeTool?.color || '#1c1c1e',
+                opacity: activeTool?.type === 'highlighter' ? (activeTool.opacity ?? 0.3) : 1,
+              }}
+            />
+          )}
+        </button>
+      </div>
+    )
+  }
 
   const pens = drawTools.filter(t => t.type === 'pen')
   const highlighters = drawTools.filter(t => t.type === 'highlighter')
@@ -87,6 +117,19 @@ export default function FloatingDrawTools({
 
   return (
     <div className="floating-draw-tools">
+      {/* ── 패널 헤더 (접기 버튼) ── */}
+      <div className="fdt-panel-header">
+        <span className="fdt-panel-title">드로우</span>
+        <button
+          className="fdt-panel-collapse"
+          onClick={() => setCollapsed(true)}
+          title="패널 접기"
+          aria-label="패널 접기"
+        >
+          <CaretRightIcon size={12} />
+        </button>
+      </div>
+
       {/* ── Pens ── */}
       <div className="fdt-section">
         <div className="fdt-section-header">
