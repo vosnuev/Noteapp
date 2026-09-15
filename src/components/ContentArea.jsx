@@ -14,7 +14,7 @@ export default function ContentArea({
   drawTools, activeDrawToolId,
   onSelectDrawTool, onUpdateDrawTool, onAddDrawTool, onRemoveDrawTool,
   onUndoStrokes, onClearStrokes,
-  onStrokesChange, onBlocksChange, onNameChange
+  onStrokesChange, onBlocksChange, onNameChange, onAddEvent
 }) {
   const scrollRef   = useRef(null)
   const titleRef    = useRef(null)
@@ -184,6 +184,7 @@ export default function ContentArea({
             blocks={page.blocks || []}
             onChange={onBlocksChange}
             isDrawMode={isDrawMode}
+            onAddEvent={onAddEvent}
           />
 
           {/* Add-block input — Notion-style "/" */}

@@ -8,7 +8,7 @@ import CalendarBlock from './blocks/CalendarBlock.jsx'
 import ImageBlock from './blocks/ImageBlock.jsx'
 import PdfBlock from './blocks/PdfBlock.jsx'
 
-export default function BlockList({ blocks, onChange, isDrawMode }) {
+export default function BlockList({ blocks, onChange, isDrawMode, onAddEvent }) {
   const updateBlock = (id, updated) => onChange(blocks.map(b => b.id === id ? updated : b))
   const deleteBlock = (id) => onChange(blocks.filter(b => b.id !== id))
 
@@ -44,7 +44,7 @@ export default function BlockList({ blocks, onChange, isDrawMode }) {
           {block.type === 'math' && <MathBlock block={block} onChange={b => updateBlock(block.id, b)} />}
           {block.type === 'markdown' && <MarkdownBlock block={block} onChange={b => updateBlock(block.id, b)} />}
           {block.type === 'table' && <TableBlock block={block} onChange={b => updateBlock(block.id, b)} />}
-          {block.type === 'todo' && <TodoBlock block={block} onChange={b => updateBlock(block.id, b)} />}
+          {block.type === 'todo' && <TodoBlock block={block} onChange={b => updateBlock(block.id, b)} onAddEvent={onAddEvent} />}
           {block.type === 'kanban' && <KanbanBlock block={block} onChange={b => updateBlock(block.id, b)} />}
           {block.type === 'calendar' && <CalendarBlock block={block} onChange={b => updateBlock(block.id, b)} />}
           {block.type === 'image' && <ImageBlock block={block} onChange={b => updateBlock(block.id, b)} />}

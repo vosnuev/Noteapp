@@ -401,6 +401,11 @@ export default function App() {
     })
   }, [activeDrawToolId])
 
+  /* ── Todo → 캘린더 일정 변환 ── */
+  const handleAddEvent = useCallback((ev) => {
+    setEvents(prev => [...prev, ev])
+  }, [])
+
   return (
     <div className="app">
       <Toolbar
@@ -487,6 +492,7 @@ export default function App() {
             onStrokesChange={handleStrokesChange}
             onBlocksChange={handleBlocksChange}
             onNameChange={handleNameChange}
+            onAddEvent={handleAddEvent}
           />
         ) : (
           <CalendarView
