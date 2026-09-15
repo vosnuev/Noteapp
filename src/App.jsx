@@ -224,6 +224,20 @@ export default function App() {
     )
   }, [activeDrawToolId])
 
+  // 활성 드로우 도구의 굵기 업데이트
+  const setPenWidth = useCallback((width) => {
+    setDrawTools((prev) =>
+      prev.map((t) => (t.id === activeDrawToolId ? { ...t, width } : t)),
+    )
+  }, [activeDrawToolId])
+
+  // 활성 드로우 도구의 타입(pen/highlighter/eraser) 업데이트
+  const setPenTool = useCallback((type) => {
+    setDrawTools((prev) =>
+      prev.map((t) => (t.id === activeDrawToolId ? { ...t, type } : t)),
+    )
+  }, [activeDrawToolId])
+
   /* ── Persist UI state (탭/선택/토글/정렬) ── */
   useEffect(() => {
     try {
