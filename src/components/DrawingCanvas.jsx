@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 
-export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, strokes, onChange, onDrawStart, onDrawEnd }) {
+export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, penOpacity = 1, strokes, onChange, onDrawStart, onDrawEnd }) {
   const canvasRef   = useRef(null)
   const isDown      = useRef(false)
   const currentPts  = useRef([])
@@ -18,9 +18,9 @@ export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, s
       ctx.lineWidth   = stroke.width * 5
     } else if (stroke.tool === 'highlighter') {
       ctx.globalCompositeOperation = 'source-over'
-      ctx.globalAlpha  = 0.28
+      ctx.globalAlpha  = stroke.opacity ?? 0.3
       ctx.strokeStyle  = stroke.color
-      ctx.lineWidth    = stroke.width * 4
+      ctx.lineWidth    = stroke.width
     } else {
       ctx.globalCompositeOperation = 'source-over'
       ctx.globalAlpha  = 1
@@ -116,7 +116,7 @@ export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, s
     if (!isDown.current || !isActive) return
     e.preventDefault()
     currentPts.current.push(getPos(e))
-    redraw({ points: currentPts.current, color: penColor, width: penWidth, tool: penTool })
+    redraw({ points: currentPts.current, color: penColor, width: penWidth, tool: penTool, opacity: penTool === 'highlighter' ? penOpacity : 1 })
   }, [isActive, penColor, penWidth, penTool, redraw])
 
   const onPointerUp = useCallback((e) => {
@@ -127,6 +127,7 @@ export default function DrawingCanvas({ isActive, penColor, penWidth, penTool, s
         id: Date.now() + Math.random(),
         points: [...currentPts.current],
         color: penColor, width: penWidth, tool: penTool,
+        opacity: penTool === 'highlighter' ? penOpacity : 1,
       }
       onChange([...strokesRef.current, stroke])
       onDrawEnd?.()

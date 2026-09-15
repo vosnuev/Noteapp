@@ -3,13 +3,17 @@ import DrawingCanvas from './DrawingCanvas.jsx'
 import BlockList from './BlockList.jsx'
 import SlashMenu from './SlashMenu.jsx'
 import TextFormatBar from './TextFormatBar.jsx'
+import FloatingDrawTools from './FloatingDrawTools.jsx'
 import { createBlock, TEMPLATES } from '../templates.js'
 
 const uid = () => Math.random().toString(36).slice(2)
 
 export default function ContentArea({
   page, isDrawMode,
-  penColor, penWidth, penTool,
+  penColor, penWidth, penTool, penOpacity,
+  drawTools, activeDrawToolId,
+  onSelectDrawTool, onUpdateDrawTool, onAddDrawTool, onRemoveDrawTool,
+  onUndoStrokes, onClearStrokes,
   onStrokesChange, onBlocksChange, onNameChange
 }) {
   const scrollRef   = useRef(null)
@@ -203,6 +207,7 @@ export default function ContentArea({
             penColor={penColor}
             penWidth={penWidth}
             penTool={penTool}
+            penOpacity={penOpacity}
             strokes={page.strokes}
             onChange={onStrokesChange}
             onDrawStart={handleDrawStart}
@@ -233,6 +238,21 @@ export default function ContentArea({
           {saveStatus === 'saved'   && '✅ 저장 완료'}
           {saveStatus === 'idle'    && '✏️ Draw Mode — 콘텐츠 위에 바로 필기하세요'}
         </div>
+      )}
+
+      {/* Floating Draw Tools — Draw 모드일 때만 */}
+      {isDrawMode && drawTools && (
+        <FloatingDrawTools
+          drawTools={drawTools}
+          activeDrawToolId={activeDrawToolId}
+          onSelectTool={onSelectDrawTool}
+          onUpdateTool={onUpdateDrawTool}
+          onAddTool={onAddDrawTool}
+          onRemoveTool={onRemoveDrawTool}
+          onUndo={onUndoStrokes}
+          onClear={onClearStrokes}
+          hasStrokes={page?.strokes?.length > 0}
+        />
       )}
     </div>
   )

@@ -195,10 +195,24 @@ export default function App() {
   const [sectionsSort, setSectionsSort] = useState(initialUi.sectionsSort ?? 'default')
   const [pagesSort, setPagesSort] = useState(initialUi.pagesSort ?? 'default')
   const [isDrawMode, setIsDrawMode] = useState(false)
-  const [penColor, setPenColor] = useState('#6d28d9')
-  const [penWidth, setPenWidth] = useState(3)
-  const [penTool, setPenTool] = useState('pen')
   const [theme, setTheme] = useState(loadTheme)
+
+  /* ── 드로우 도구함: 사용자 정의 펜/형광펜/지우개 ── */
+  const defaultDrawTools = [
+    { id: 'dt-ink',  type: 'pen',         color: '#1c1c1e', width: 3,  opacity: 1   },
+    { id: 'dt-prpl', type: 'pen',         color: '#6d28d9', width: 3,  opacity: 1   },
+    { id: 'dt-org',  type: 'pen',         color: '#ea580c', width: 5,  opacity: 1   },
+    { id: 'dt-hl1',  type: 'highlighter', color: '#ea580c', width: 18, opacity: 0.3 },
+    { id: 'dt-hl2',  type: 'highlighter', color: '#6d28d9', width: 18, opacity: 0.3 },
+    { id: 'dt-er',   type: 'eraser',      color: '#000000', width: 28, opacity: 1   },
+  ]
+  const [drawTools, setDrawTools] = useState(defaultDrawTools)
+  const [activeDrawToolId, setActiveDrawToolId] = useState('dt-ink')
+  const activeDrawTool = drawTools.find(t => t.id === activeDrawToolId) || defaultDrawTools[0]
+  const penColor = activeDrawTool.color
+  const penWidth = activeDrawTool.width
+  const penTool = activeDrawTool.type
+  const penOpacity = activeDrawTool.opacity ?? 1
 
   /* ── Persist UI state (탭/선택/토글/정렬) ── */
   useEffect(() => {
@@ -362,6 +376,30 @@ export default function App() {
     if (selectedPage) handleStrokesChange([])
   }, [selectedPage, handleStrokesChange])
 
+  /* ── 드로우 도구함 핸들러 ── */
+  const handleSelectDrawTool = useCallback((id) => setActiveDrawToolId(id), [])
+  const handleUpdateDrawTool = useCallback((id, patch) => {
+    setDrawTools(prev => prev.map(t => t.id === id ? { ...t, ...patch } : t))
+  }, [])
+  const handleAddDrawTool = useCallback((type) => {
+    const defaults = type === 'highlighter'
+      ? { color: '#ea580c', width: 18, opacity: 0.3 }
+      : { color: '#6d28d9', width: 3, opacity: 1 }
+    const id = 'dt-' + Date.now().toString(36)
+    setDrawTools(prev => [...prev, { id, type, ...defaults }])
+    setActiveDrawToolId(id)
+  }, [])
+  const handleRemoveDrawTool = useCallback((id) => {
+    setDrawTools(prev => {
+      const next = prev.filter(t => t.id !== id)
+      if (id === activeDrawToolId) {
+        const fallback = next.find(t => t.type === 'pen') || next[0]
+        if (fallback) setActiveDrawToolId(fallback.id)
+      }
+      return next
+    })
+  }, [activeDrawToolId])
+
   return (
     <div className="app">
       <Toolbar
@@ -434,6 +472,15 @@ export default function App() {
             penColor={penColor}
             penWidth={penWidth}
             penTool={penTool}
+            penOpacity={penOpacity}
+            drawTools={drawTools}
+            activeDrawToolId={activeDrawToolId}
+            onSelectDrawTool={handleSelectDrawTool}
+            onUpdateDrawTool={handleUpdateDrawTool}
+            onAddDrawTool={handleAddDrawTool}
+            onRemoveDrawTool={handleRemoveDrawTool}
+            onUndoStrokes={handleUndo}
+            onClearStrokes={handleClear}
             onStrokesChange={handleStrokesChange}
             onBlocksChange={handleBlocksChange}
             onNameChange={handleNameChange}
