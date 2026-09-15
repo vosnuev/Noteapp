@@ -212,30 +212,18 @@ export default function App() {
   const [activeDrawToolId, setActiveDrawToolId] = useState('dt-ink')
   const [eraserMode, setEraserMode] = useState('pixel') // 'pixel' | 'stroke'
   const activeDrawTool = drawTools.find(t => t.id === activeDrawToolId) || defaultDrawTools[0]
-  const penColor = activeDrawTool.color
-  const penWidth = activeDrawTool.width
-  const penTool = activeDrawTool.type
+
+  // 펜 속성은 useState로 직접 관리 (esbuild가 useCallback setter를 tree-shake하는 버그 회피)
+  const [penColor, setPenColor] = useState(activeDrawTool.color)
+  const [penWidth, setPenWidth] = useState(activeDrawTool.width)
+  const [penTool, setPenTool] = useState(activeDrawTool.type)
   const penOpacity = activeDrawTool.opacity ?? 1
 
-  // 활성 드로우 도구의 색상을 업데이트 (드로우 캔버스의 컬러 피커용)
-  const setPenColor = useCallback((color) => {
-    setDrawTools((prev) =>
-      prev.map((t) => (t.id === activeDrawToolId ? { ...t, color } : t)),
-    )
-  }, [activeDrawToolId])
-
-  // 활성 드로우 도구의 굵기 업데이트
-  const setPenWidth = useCallback((width) => {
-    setDrawTools((prev) =>
-      prev.map((t) => (t.id === activeDrawToolId ? { ...t, width } : t)),
-    )
-  }, [activeDrawToolId])
-
-  // 활성 드로우 도구의 타입(pen/highlighter/eraser) 업데이트
-  const setPenTool = useCallback((type) => {
-    setDrawTools((prev) =>
-      prev.map((t) => (t.id === activeDrawToolId ? { ...t, type } : t)),
-    )
+  // 활성 드로우 도구가 바뀌면 펜 속성도 동기화
+  useEffect(() => {
+    setPenColor(activeDrawTool.color)
+    setPenWidth(activeDrawTool.width)
+    setPenTool(activeDrawTool.type)
   }, [activeDrawToolId])
 
   /* ── Persist UI state (탭/선택/토글/정렬) ── */
