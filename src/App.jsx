@@ -217,6 +217,13 @@ export default function App() {
   const penTool = activeDrawTool.type
   const penOpacity = activeDrawTool.opacity ?? 1
 
+  // 활성 드로우 도구의 색상을 업데이트 (드로우 캔버스의 컬러 피커용)
+  const setPenColor = useCallback((color) => {
+    setDrawTools((prev) =>
+      prev.map((t) => (t.id === activeDrawToolId ? { ...t, color } : t)),
+    )
+  }, [activeDrawToolId])
+
   /* ── Persist UI state (탭/선택/토글/정렬) ── */
   useEffect(() => {
     try {
